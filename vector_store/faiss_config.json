@@ -1,0 +1,1 @@
+{"model_key": "st:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", "dim": 384, "metric": "ip"}

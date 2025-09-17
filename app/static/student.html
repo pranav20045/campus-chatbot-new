@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Student Dashboard</title>
+	<style>
+		body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}
+		.container{max-width:800px;margin:40px auto;padding:0 16px}
+		.card{background:#111827;padding:16px;border-radius:12px;margin-bottom:16px}
+		input,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#e2e8f0;margin-top:10px}
+		button{background:#2563eb;border:none;cursor:pointer}
+		button:hover{background:#1d4ed8}
+		.answer{white-space:pre-wrap;background:#0b1220;padding:10px;border-radius:8px}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="card">
+			<h2>Ask a question</h2>
+			<textarea id="question" rows="4" placeholder="Type your query in any language..."></textarea>
+			<button onclick="ask()">Ask</button>
+			<div id="result" class="answer" style="margin-top:10px"></div>
+		</div>
+		<div class="card">
+			<h3>History</h3>
+			<div id="history"></div>
+		</div>
+	</div>
+	<script>
+	const token = localStorage.getItem('token');
+	if(!token) location.href='/'
+	async function ask(){
+		const q = document.getElementById('question').value.trim();
+		if(!q) return;
+		const res = await fetch('/api/student/ask', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({question:q})});
+		const data = await res.json();
+		document.getElementById('result').textContent = data.answer || data.message;
+		loadHistory();
+	}
+	async function loadHistory(){
+		const res = await fetch('/api/student/history', {headers:{'Authorization':'Bearer '+token}});
+		const items = await res.json();
+		document.getElementById('history').innerHTML = items.map(i=>`<div class="answer"><div><strong>Q:</strong> ${i.question}</div><div><strong>A:</strong> ${i.answer||'—'}</div><div>Status: ${i.status}</div></div>`).join('');
+	}
+	loadHistory();
+	</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Staff Dashboard</title>
+	<style>
+		body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}
+		.container{max-width:800px;margin:40px auto;padding:0 16px}
+		.card{background:#111827;padding:16px;border-radius:12px;margin-bottom:16px}
+		button{background:#2563eb;border:none;cursor:pointer;color:#e2e8f0;padding:8px 12px;border-radius:8px}
+		textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#e2e8f0;margin-top:10px}
+		.item{background:#0b1220;padding:12px;border-radius:8px;margin:8px 0}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="card">
+			<h2>Pending Queries</h2>
+			<div id="list"></div>
+		</div>
+	</div>
+	<script>
+	const token = localStorage.getItem('token');
+	if(!token || localStorage.getItem('role')!=='staff') location.href='/'
+	async function load(){
+		const res = await fetch('/api/staff/pending', {headers:{'Authorization':'Bearer '+token}});
+		const items = await res.json();
+		document.getElementById('list').innerHTML = items.map(i=>`<div class='item'><div><strong>Q:</strong> ${i.question}</div><textarea id='ans-${i.id}' rows='3' placeholder='Type answer...'></textarea><div style='margin-top:8px'><button onclick='send(${i.id})'>Send</button></div></div>`).join('');
+	}
+	async function send(id){
+		const answer = document.getElementById('ans-'+id).value;
+		await fetch('/api/staff/answer_json/'+id, {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({answer})});
+		load();
+	}
+	load();
+	</script>
+</body>
+</html>

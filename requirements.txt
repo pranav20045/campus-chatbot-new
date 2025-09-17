@@ -1,0 +1,27 @@
+fastapi
+uvicorn[standard]
+python-multipart
+SQLAlchemy
+alembic
+passlib[bcrypt]
+PyJWT
+pydantic
+pydantic-settings
+langdetect
+deep-translator
+PyPDF2
+pdfminer.six
+Jinja2
+Pillow
+pytesseract
+openai
+sentence-transformers
+numpy
+
+# RAG engine deps
+langchain
+langchain-community
+chromadb
+google-generativeai
+python-dotenv
+pypdf

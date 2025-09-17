@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Campus Chatbot - Login</title>
+	<style>
+		body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#0f172a;color:#e2e8f0}
+		.container{max-width:420px;margin:80px auto;background:#111827;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+		input,button{width:100%;padding:10px;border-radius:8px;border:1px solid #334155;background:#0b1220;color:#e2e8f0;margin-top:10px}
+		button{background:#2563eb;border:none;cursor:pointer}
+		button:hover{background:#1d4ed8}
+		.small{font-size:12px;color:#94a3b8;margin-top:10px}
+		.link{color:#93c5fd;text-decoration:none}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2>Campus Chatbot</h2>
+		<input id="email" placeholder="Email" value="student@campus.local" />
+		<input id="password" type="password" placeholder="Password" value="student123" />
+		<button onclick="login()">Login</button>
+		<div class="small">Demo users: admin@campus.local (admin123), staff@campus.local (staff123), student@campus.local (student123)</div>
+	</div>
+	<script>
+	async function login(){
+		const email = document.getElementById('email').value;
+		const password = document.getElementById('password').value;
+		const params = new URLSearchParams({email,password});
+		const res = await fetch('/api/auth/login', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params});
+		if(!res.ok){ alert('Login failed'); return }
+		const data = await res.json();
+		localStorage.setItem('token', data.access_token);
+		localStorage.setItem('role', data.role);
+		if(data.role==='admin') location.href='/admin.html';
+		else if(data.role==='staff') location.href='/staff.html';
+		else location.href='/student.html';
+	}
+	</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{color-scheme:light}
+body{ @apply antialiased bg-gradient-to-br from-background to-secondary-light text-dark }
+.container{ @apply max-w-6xl mx-auto px-4 }
+.card{ @apply bg-card rounded-3xl shadow-xl p-6 border border-secondary/20 }
+.btn{ @apply inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-white shadow-md hover:bg-primary-muted transition }
+.input{ @apply rounded-xl border border-secondary bg-card px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary }
+
+/* Dark mode (class-based) */
+.dark body{ @apply bg-dark text-background }
+.dark .card{ @apply bg-dark/90 border-secondary/30 text-background }
+.dark .btn{ @apply bg-primary hover:bg-primary-muted }
+.dark .input{ @apply bg-dark/80 border-secondary/30 text-background placeholder:text-secondary }
+
+/* Micro animations */
+.fade-in{ animation: fade-in .35s ease both }
+@keyframes fade-in{ from{ opacity:0; transform: translateY(6px) } to{ opacity:1; transform:none } }
+
+
