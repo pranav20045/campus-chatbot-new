@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { useAuth } from '../lib/auth'
 
 type Role = 'student'|'staff'|'admin'
 
@@ -11,6 +12,8 @@ export default function Login(){
 	const [showPwd,setShowPwd] = useState(false)
 	const [loading,setLoading] = useState(false)
 	const nav = useNavigate()
+  const { signInEmailPassword } = useAuth()
+  const { signUpEmailPassword } = useAuth()
 
 	const roleCopy = useMemo(()=>({
 		student: { heading: 'Hello, Student!', cta: 'Register', hint: 'New here? Create your student account.' },
@@ -36,10 +39,35 @@ export default function Login(){
 		const data = await res.json()
 		localStorage.setItem('token', data.access_token)
 		localStorage.setItem('role', data.role)
+		// Try to sign into Firebase (non-blocking for backend auth)
+		try{ await signInEmailPassword(email, password) }catch{}
 		if(data.role==='admin') nav('/app/admin')
 		else if(data.role==='staff') nav('/app/staff')
 		else nav('/app/student')
 	}
+
+  async function onRegister(){
+    setLoading(true)
+    try{
+      const body = new URLSearchParams({ email, password, role })
+      const res = await api('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body })
+      if(!res.ok){
+        const msg = await res.text()
+        alert(`Registration failed: ${msg}`)
+        return
+      }
+      const data = await res.json()
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('role', data.role)
+      // Create Firebase user as well (best-effort)
+      try{ await signUpEmailPassword(email, password) }catch{}
+      if(data.role==='admin') nav('/app/admin')
+      else if(data.role==='staff') nav('/app/staff')
+      else nav('/app/student')
+    }finally{
+      setLoading(false)
+    }
+  }
 
 
 
@@ -130,8 +158,8 @@ export default function Login(){
 						{/* Sign up prompt */}
 						<div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
 							<span className="text-sm text-white/90">Don't have an account?</span>
-							<button type="button" className="px-4 py-2 rounded-full bg-white text-primary text-sm font-medium hover:shadow-lg transition-all">
-								{roleCopy[role].cta}
+							<button type="button" onClick={onRegister} disabled={loading} className="px-4 py-2 rounded-full bg-white text-primary text-sm font-medium hover:shadow-lg transition-all">
+								{loading ? 'Creating...' : roleCopy[role].cta}
 							</button>
 						</div>
 					</div>
@@ -195,7 +223,7 @@ export default function Login(){
 						</form>
 						
 						<div className="mt-8 text-center">
-							<p className="text-sm text-muted mb-4">Don't have an account? <a href="#" className="text-primary font-medium hover:underline">Sign up now</a></p>
+							<p className="text-sm text-muted mb-4">Don't have an account? <button type="button" onClick={onRegister} disabled={loading} className="text-primary font-medium hover:underline">Sign up now</button></p>
 							<p className="text-xs text-muted/70">
 								Demo: admin@campus.local/admin123 • staff@campus.local/staff123 • student@campus.local/student123
 							</p>

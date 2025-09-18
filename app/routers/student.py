@@ -6,7 +6,7 @@ from ..database import get_db
 from .. import models
 from ..schemas import QueryCreate
 import ai_engine
-from ..auth import get_current_user, create_access_token, verify_password
+from ..auth import get_current_user, create_access_token, verify_password, get_password_hash
 from fastapi import HTTPException
 from fastapi import Form
 import os
@@ -22,6 +22,28 @@ def login(email: str = Form(...), password: str = Form(...), db: Session = Depen
 	token = create_access_token({"sub": str(user.id), "role": user.role})
 	return {"access_token": token, "token_type": "bearer", "role": user.role}
 
+@router.post("/auth/register")
+def register(
+    email: str = Form(...),
+    password: str = Form(...),
+    role: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    role = role.lower().strip()
+    if role not in {"student", "staff", "admin"}:
+        raise HTTPException(status_code=400, detail="Invalid role")
+
+    existing = db.query(models.User).filter(models.User.email == email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    user = models.User(email=email, password_hash=get_password_hash(password), role=role)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    token = create_access_token({"sub": str(user.id), "role": user.role})
+    return {"access_token": token, "token_type": "bearer", "role": user.role}
 
 def _norm(s: str) -> str:
 	return re.sub(r"\s+", " ", s.lower().strip())

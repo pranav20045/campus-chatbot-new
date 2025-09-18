@@ -7,6 +7,7 @@ import Login from './pages/Login'
 import Student from './pages/Student'
 import Admin from './pages/Admin'
 import Staff from './pages/Staff'
+import { AuthProvider } from './lib/auth'
 
 // Apply persisted theme early to affect whole page
 const persistedDark = typeof window!=='undefined' && localStorage.getItem('theme-dark')==='1'
@@ -25,7 +26,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
-		<RouterProvider router={router} />
+		<AuthProvider>
+			<RouterProvider router={router} />
+		</AuthProvider>
 	</React.StrictMode>
 )
 

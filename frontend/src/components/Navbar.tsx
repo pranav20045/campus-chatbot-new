@@ -1,10 +1,13 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useAuth } from '../lib/auth'
 
 export default function Navbar(){
 	const role = typeof window!=='undefined' ? localStorage.getItem('role') : null
 	const { pathname } = useLocation()
 	const [dark,setDark] = useState<boolean>(false)
+  const nav = useNavigate()
+  const { signOut } = useAuth()
 
 	useEffect(()=>{
 		const pref = typeof window!=='undefined' && localStorage.getItem('theme-dark')==='1'
@@ -33,12 +36,33 @@ export default function Navbar(){
 					</div>
 					<span className="font-bold text-xl text-dark dark:text-background">Campus Chatbot</span>
 				</Link>
-				<nav className="hidden md:flex gap-2 text-sm">
+				<nav className="hidden md:flex gap-2 text-sm items-center">
 					{role==='student' && <NavLink to="/app/student" label="💬 Chat"/>}
-					{role==='admin' && <NavLink to="/app/admin" label="📄 Upload PDF"/>}
 					{role==='staff' && <NavLink to="/app/staff" label="👨‍🏫 Staff"/>}
+					{role==='admin' && (
+						<>
+							<NavLink to="/app/student" label="💬 Chat"/>
+							<NavLink to="/app/staff" label="👨‍🏫 Staff"/>
+							<NavLink to="/app/admin" label="📄 Upload PDF"/>
+						</>
+					)}
 				</nav>
-				<button onClick={toggleTheme} className="btn px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-dark dark:bg-secondary/30 dark:hover:bg-secondary/40 dark:text-background">{dark? '☀️ Light':'🌙 Dark'}</button>
+				<div className="flex items-center gap-2">
+					<button onClick={toggleTheme} className="btn px-4 py-2 rounded-xl bg-secondary hover:bg-secondary/80 text-dark dark:bg-secondary/30 dark:hover:bg-secondary/40 dark:text-background">{dark? '☀️ Light':'🌙 Dark'}</button>
+					{role && (
+						<button
+							className="btn px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200"
+							onClick={async ()=>{
+								await signOut()
+								localStorage.removeItem('token')
+								localStorage.removeItem('role')
+								nav('/')
+							}}
+						>
+							Logout
+						</button>
+					)}
+				</div>
 			</div>
 		</header>
 	)
