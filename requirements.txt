@@ -25,3 +25,5 @@ chromadb
 google-generativeai
 python-dotenv
 pypdf
+pydantic[email]
+
