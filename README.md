@@ -1,3 +1,20 @@
+Team Work
+Asiya Attar – Implemented a FastAPI-based campus assistant with Retrieval-Augmented Generation (RAG). Documents are ingested into a persistent Chroma vector database, which I set up, and student questions are answered using Gemini with strict, context-grounded prompts.
+
+Overview
+
+Framework: FastAPI backend
+
+Auth: Admin, Staff, Student roles
+
+Ingestion: data_ingest.py builds a Chroma vector DB from PDFs under source_documents/ (vector DB implementation done by me)
+
+Retrieval + Answering: ai_engine.py uses Chroma + Gemini (via google-generativeai)
+
+Persistence: Vector DB stored in vector_db/
+
+Unanswered logs: storage/logs/unanswered_questions.jsonl
+
 # Campus Chatbot
 
 A FastAPI-based campus assistant with Retrieval-Augmented Generation (RAG). Documents are ingested into a persistent Chroma vector database and student questions are answered using Gemini with strict, context-grounded prompts.
