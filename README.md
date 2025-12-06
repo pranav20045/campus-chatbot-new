@@ -1,4 +1,4 @@
-Team Work
+Team Work ,
 Asiya Attar – Implemented a FastAPI-based campus assistant with Retrieval-Augmented Generation (RAG). Documents are ingested into a persistent Chroma vector database, which I set up, and student questions are answered using Gemini with strict, context-grounded prompts.
 
 Overview
