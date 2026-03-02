@@ -1,6 +1,3 @@
-Team Work ,
-Asiya Attar – Implemented a FastAPI-based campus assistant with Retrieval-Augmented Generation (RAG). Documents are ingested into a persistent Chroma vector database, which I set up, and student questions are answered using Gemini with strict, context-grounded prompts.
-
 Overview
 
 Framework: FastAPI backend
@@ -132,8 +129,3 @@ Check vector DB stats:
   - `app/services/vector_store.py`
 - They’ve been replaced with `data_ingest.py` (ingestion) and `ai_engine.py` (retrieval/answers).
 
-## Security
-- Never commit API keys. `.env` is ignored by Git via `.gitignore`.
-
-## License
-Add your license here (e.g., MIT).
